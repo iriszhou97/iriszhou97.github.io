@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日语N5场景化单词卡片（带发音）</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', 'Noto Sans JP', sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    padding: 20px;
+  }
+
+  .no-print {
+    max-width: 900px;
+    margin: 0 auto 30px;
+    text-align: center;
+  }
+
+  .no-print h1 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .no-print p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+
+  .controls button {
+    padding: 10px 20px;
+    border: 2px solid #3498db;
+    background: white;
+    color: #3498db;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .controls button:hover,
+  .controls button.active {
+    background: #3498db;
+    color: white;
+  }
+
+  .controls button.print-btn {
+    border-color: #e74c3c;
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  .controls button.print-btn:hover {
+    background: #e74c3c;
+    color: white;
+  }
+
+  .controls button.audio-all-btn {
+    border-color: #2ecc71;
+    color: #2ecc71;
+    font-weight: 600;
+  }
+
+  .controls button.audio-all-btn:hover,
+  .controls button.audio-all-btn.active {
+    background: #2ecc71;
+    color: white;
+  }
+
+  .card-size-toggle {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+    align-items: center;
+  }
+
+  .card-size-toggle span {
+    font-size: 13px;
+    color: #888;
+  }
+
+  .card-size-toggle button {
+    padding: 6px 14px;
+    border: 1px solid #bbb;
+    background: white;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .card-size-toggle button:hover,
+  .card-size-toggle button.active {
+    background: #2c3e50;
+    color: white;
+    border-color: #2c3e50;
+  }
+
+  .speed-toggle {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+    align-items: center;
+  }
+
+  .speed-toggle span {
+    font-size: 13px;
+    color: #888;
+  }
+
+  .speed-toggle button {
+    padding: 6px 14px;
+    border: 1px solid #bbb;
+    background: white;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .speed-toggle button:hover,
+  .speed-toggle button.active {
+    background: #e67e22;
+    color: white;
+    border-color: #e67e22;
+  }
+
+  .scene-section {
+    max-width: 900px;
+    margin: 0 auto 40px;
+  }
+
+  .scene-title {
+    font-size: 22px;
+    color: #2c3e50;
+    padding: 12px 20px;
+    background: white;
+    border-left: 5px solid #3498db;
+    margin-bottom: 20px;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .scene-title .play-scene-btn {
+    font-size: 13px;
+    padding: 6px 14px;
+    border: 1.5px solid #3498db;
+    background: white;
+    color: #3498db;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .scene-title .play-scene-btn:hover {
+    background: #3498db;
+    color: white;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+  }
+
+  .cards-grid.size-large {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px 15px 14px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border: 1px solid #e8e8e8;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+  }
+
+  .card.speaking {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+  }
+
+  .card .kanji {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .cards-grid.size-large .card .kanji {
+    font-size: 34px;
+  }
+
+  .card .reading {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: #3498db;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .cards-grid.size-large .card .reading {
+    font-size: 16px;
+  }
+
+  .card .meaning {
+    font-size: 15px;
+    color: #555;
+    font-weight: 600;
+    padding-top: 8px;
+    border-top: 1px dashed #e0e0e0;
+  }
+
+  .cards-grid.size-large .card .meaning {
+    font-size: 17px;
+  }
+
+  .card .tag {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+  }
+
+  .tag-noun { background: #3498db; }
+  .tag-verb { background: #e74c3c; }
+  .tag-adj { background: #2ecc71; }
+  .tag-adv { background: #9b59b6; }
+  .tag-phrase { background: #f39c12; }
+  .tag-num { background: #1abc9c; }
+
+  .card .speak-btn {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: #f0f4f8;
+    color: #3498db;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .card .speak-btn:hover {
+    background: #3498db;
+    color: white;
+    transform: scale(1.1);
+  }
+
+  .card .speak-btn.playing {
+    background: #3498db;
+    color: white;
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(52,152,219,0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(52,152,219,0); }
+    100% { box-shadow: 0 0 0 0 rgba(52,152,219,0); }
+  }
+
+  .sentence-section {
+    max-width: 900px;
+    margin: 0 auto 40px;
+  }
+
+  .sentence-title {
+    font-size: 20px;
+    color: #2c3e50;
+    padding: 12px 20px;
+    background: white;
+    border-left: 5px solid #e74c3c;
+    margin-bottom: 20px;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .sentence-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .sentence-card {
+    background: white;
+    border-radius: 10px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #e8e8e8;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sentence-card:hover {
+    border-color: #3498db;
+    box-shadow: 0 2px 12px rgba(52,152,219,0.15);
+  }
+
+  .sentence-card.speaking {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231,76,60,0.15);
+  }
+
+  .sentence-card .jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 4px;
+    padding-right: 40px;
+  }
+
+  .sentence-card .kana {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    color: #3498db;
+    margin-bottom: 6px;
+  }
+
+  .sentence-card .cn {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .sentence-card .sent-speak-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid #e0e0e0;
+    background: white;
+    color: #e74c3c;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .sentence-card .sent-speak-btn:hover {
+    background: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+  }
+
+  .sentence-card .sent-speak-btn.playing {
+    background: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+    animation: pulse-red 1s infinite;
+  }
+
+  @keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(231,76,60,0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(231,76,60,0); }
+    100% { box-shadow: 0 0 0 0 rgba(231,76,60,0); }
+  }
+
+  .legend {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #666;
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .audio-notice {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #856404;
+    margin-bottom: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    line-height: 1.6;
+  }
+
+  .audio-notice strong { color: #664d03; }
+
+  .autoplay-progress {
+    max-width: 900px;
+    margin: 0 auto 20px;
+    background: white;
+    border-radius: 10px;
+    padding: 14px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    display: none;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .autoplay-progress.visible {
+    display: flex;
+  }
+
+  .autoplay-progress .progress-text {
+    font-size: 14px;
+    color: #2c3e50;
+    flex: 1;
+  }
+
+  .autoplay-progress .progress-text .current-word {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 700;
+    color: #3498db;
+    font-size: 18px;
+  }
+
+  .autoplay-progress .progress-bar-wrapper {
+    flex: 2;
+    height: 8px;
+    background: #e8e8e8;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .autoplay-progress .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 4px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  .autoplay-progress .stop-btn {
+    padding: 6px 16px;
+    border: 2px solid #e74c3c;
+    background: white;
+    color: #e74c3c;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .autoplay-progress .stop-btn:hover {
+    background: #e74c3c;
+    color: white;
+  }
+
+  @media print {
+    body { background: white; padding: 10px; font-size: 12px; }
+    .no-print, .audio-notice, .autoplay-progress { display: none !important; }
+    .scene-section, .sentence-section { margin-bottom: 20px; }
+    .scene-title, .sentence-title {
+      font-size: 16px; padding: 8px 12px;
+      box-shadow: none; border: 1px solid #ccc;
+      border-left: 4px solid #333; margin-bottom: 10px;
+      background: #f5f5f5;
+    }
+    .scene-title .play-scene-btn { display: none !important; }
+    .cards-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 8px; }
+    .cards-grid.size-large { grid-template-columns: repeat(3, 1fr) !important; }
+    .card { box-shadow: none; border: 1.5px solid #999; border-radius: 6px; padding: 10px 8px; }
+    .card:hover { transform: none; }
+    .card .kanji { font-size: 22px; }
+    .card .reading { font-size: 11px; }
+    .card .meaning { font-size: 12px; }
+    .card .tag { font-size: 8px; padding: 1px 5px; }
+    .card .speak-btn { display: none !important; }
+    .cards-grid.size-large .card .kanji { font-size: 26px; }
+    .sentence-card { box-shadow: none; border: 1.5px solid #999; border-radius: 6px; padding: 10px 14px; }
+    .sentence-card .jp { font-size: 13px; padding-right: 0; }
+    .sentence-card .kana { font-size: 11px; }
+    .sentence-card .cn { font-size: 11px; }
+    .sentence-card .sent-speak-btn { display: none !important; }
+    .scene-section, .sentence-section { page-break-inside: avoid; }
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .cards-grid.size-large { grid-template-columns: 1fr; }
+    .card .kanji { font-size: 24px; }
+    .controls button { padding: 8px 14px; font-size: 12px; }
+    .no-print h1 { font-size: 22px; }
+    .autoplay-progress { flex-direction: column; gap: 10px; }
+    .autoplay-progress .progress-bar-wrapper { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="no-print">
+  <h1>📚 日语N5场景化单词卡片</h1>
+  <p>按场景分类 · 单词 + 例句 · 点击 🔊 播放日语发音 · 点击"打印卡片"可打印裁剪</p>
+
+  <div class="audio-notice">
+    <strong>🔊 发音功能说明：</strong>使用浏览器内置语音合成（Web Speech API）。点击卡片上的 🔊 按钮可单词发音，点击场景标题旁的"▶ 连续播放"可自动朗读该场景全部单词。建议使用 Chrome / Edge / Safari 浏览器以获得最佳日语发音效果。
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div>名词</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div>动词</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2ecc71"></div>形容词</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#9b59b6"></div>副词</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f39c12"></div>短语</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1abc9c"></div>数量</div>
+  </div>
+
+  <div class="card-size-toggle">
+    <span>卡片大小：</span>
+    <button class="active" onclick="setSize('normal')">标准</button>
+    <button onclick="setSize('large')">大卡片</button>
+  </div>
+
+  <div class="speed-toggle">
+    <span>语速：</span>
+    <button onclick="setSpeed(0.6, this)">慢速</button>
+    <button class="active" onclick="setSpeed(0.85, this)">正常</button>
+    <button onclick="setSpeed(1.1, this)">快速</button>
+  </div>
+
+  <div class="controls" id="sceneButtons">
+    <button class="active" data-scene="all" onclick="filterScene('all', this)">全部场景</button>
+  </div>
+
+  <div class="controls">
+    <button onclick="toggleSentences()">显示/隐藏例句</button>
+    <button class="audio-all-btn" onclick="playAllVisible()">🔊 连续播放全部</button>
+    <button class="print-btn" onclick="window.print()">🖨️ 打印卡片</button>
+  </div>
+</div>
+
+<div class="autoplay-progress" id="autoplayBar">
+  <div class="progress-text">
+    正在播放: <span class="current-word" id="currentWord">—</span>
+  </div>
+  <div class="progress-bar-wrapper">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <button class="stop-btn" onclick="stopAutoPlay()">⏹ 停止</button>
+</div>
+
+<div id="content"></div>
+
+<script>
+const scenes = [
+  {
+    id: "traffic", icon: "✈️", name: "机场与交通出行", color: "#3498db",
+    words: [
+      { k: "飛行機", r: "ひこうき", m: "飞机", t: "noun" },
+      { k: "電車", r: "でんしゃ", m: "电车", t: "noun" },
+      { k: "バス", r: "バス", m: "公交车", t: "noun" },
+      { k: "タクシー", r: "タクシー", m: "出租车", t: "noun" },
+      { k: "車", r: "くるま", m: "汽车", t: "noun" },
+      { k: "自転車", r: "じてんしゃ", m: "自行车", t: "noun" },
+      { k: "駅", r: "えき", m: "车站", t: "noun" },
+      { k: "切符", r: "きっぷ", m: "票", t: "noun" },
+      { k: "出口", r: "でぐち", m: "出口", t: "noun" },
+      { k: "入口", r: "いりぐち", m: "入口", t: "noun" },
+      { k: "地図", r: "ちず", m: "地图", t: "noun" },
+      { k: "乗ります", r: "のります", m: "乘坐", t: "verb" },
+      { k: "降ります", r: "おります", m: "下车", t: "verb" },
+      { k: "行きます", r: "いきます", m: "去", t: "verb" },
+      { k: "来ます", r: "きます", m: "来", t: "verb" },
+      { k: "帰ります", r: "かえります", m: "回去", t: "verb" },
+      { k: "着きます", r: "つきます", m: "到达", t: "verb" },
+      { k: "遠い", r: "とおい", m: "远的", t: "adj" },
+      { k: "近い", r: "ちかい", m: "近的", t: "adj" },
+      { k: "早い", r: "はやい", m: "快的/早的", t: "adj" },
+      { k: "遅い", r: "おそい", m: "慢的/晚的", t: "adj" },
+    ],
+    sentences: [
+      { jp: "東京駅まで切符を一枚ください。", kana: "とうきょうえきまで きっぷを いちまい ください。", cn: "请给我一张到东京站的票。" },
+      { jp: "この電車は空港へ行きますか。", kana: "このでんしゃは くうこうへ いきますか。", cn: "这趟电车去机场吗？" },
+      { jp: "次の駅で降ります。", kana: "つぎのえきで おります。", cn: "我在下一站下车。" },
+      { jp: "毎朝、自転車で会社へ行きます。", kana: "まいあさ、じてんしゃで かいしゃへ いきます。", cn: "每天早上骑自行车去公司。" },
+    ]
+  },
+  {
+    id: "hotel", icon: "🏨", name: "酒店住宿", color: "#9b59b6",
+    words: [
+      { k: "ホテル", r: "ホテル", m: "酒店", t: "noun" },
+      { k: "部屋", r: "へや", m: "房间", t: "noun" },
+      { k: "鍵", r: "かぎ", m: "钥匙", t: "noun" },
+      { k: "エレベーター", r: "エレベーター", m: "电梯", t: "noun" },
+      { k: "お手洗い", r: "おてあらい", m: "洗手间", t: "noun" },
+      { k: "お風呂", r: "おふろ", m: "浴室", t: "noun" },
+      { k: "ベッド", r: "ベッド", m: "床", t: "noun" },
+      { k: "窓", r: "まど", m: "窗户", t: "noun" },
+      { k: "ドア", r: "ドア", m: "门", t: "noun" },
+      { k: "一泊", r: "いっぱく", m: "住一晚", t: "noun" },
+      { k: "予約", r: "よやく", m: "预约", t: "noun" },
+      { k: "広い", r: "ひろい", m: "宽敞的", t: "adj" },
+      { k: "狭い", r: "せまい", m: "狭窄的", t: "adj" },
+      { k: "綺麗", r: "きれい", m: "干净的/漂亮的", t: "adj" },
+      { k: "静か", r: "しずか", m: "安静的", t: "adj" },
+    ],
+    sentences: [
+      { jp: "チェックインをお願いします。", kana: "チェックインを おねがいします。", cn: "请帮我办理入住。" },
+      { jp: "部屋は静かで、とても綺麗です。", kana: "へやは しずかで、とても きれいです。", cn: "房间很安静，非常干净。" },
+      { jp: "すみません、鍵をなくしました。", kana: "すみません、かぎを なくしました。", cn: "不好意思，钥匙弄丢了。" },
+      { jp: "一泊いくらですか。", kana: "いっぱく いくらですか。", cn: "住一晚多少钱？" },
+    ]
+  },
+  {
+    id: "restaurant", icon: "🍽️", name: "餐厅点餐", color: "#e67e22",
+    words: [
+      { k: "レストラン", r: "レストラン", m: "餐厅", t: "noun" },
+      { k: "食堂", r: "しょくどう", m: "食堂", t: "noun" },
+      { k: "ご飯", r: "ごはん", m: "米饭/饭", t: "noun" },
+      { k: "パン", r: "パン", m: "面包", t: "noun" },
+      { k: "肉", r: "にく", m: "肉", t: "noun" },
+      { k: "魚", r: "さかな", m: "鱼", t: "noun" },
+      { k: "野菜", r: "やさい", m: "蔬菜", t: "noun" },
+      { k: "果物", r: "くだもの", m: "水果", t: "noun" },
+      { k: "卵", r: "たまご", m: "鸡蛋", t: "noun" },
+      { k: "水", r: "みず", m: "水", t: "noun" },
+      { k: "お茶", r: "おちゃ", m: "茶", t: "noun" },
+      { k: "コーヒー", r: "コーヒー", m: "咖啡", t: "noun" },
+      { k: "牛乳", r: "ぎゅうにゅう", m: "牛奶", t: "noun" },
+      { k: "お酒", r: "おさけ", m: "酒", t: "noun" },
+      { k: "メニュー", r: "メニュー", m: "菜单", t: "noun" },
+      { k: "食べます", r: "たべます", m: "吃", t: "verb" },
+      { k: "飲みます", r: "のみます", m: "喝", t: "verb" },
+      { k: "美味しい", r: "おいしい", m: "好吃的", t: "adj" },
+      { k: "甘い", r: "あまい", m: "甜的", t: "adj" },
+      { k: "辛い", r: "からい", m: "辣的", t: "adj" },
+      { k: "熱い", r: "あつい", m: "烫的", t: "adj" },
+      { k: "冷たい", r: "つめたい", m: "凉的", t: "adj" },
+      { k: "高い", r: "たかい", m: "贵的", t: "adj" },
+      { k: "安い", r: "やすい", m: "便宜的", t: "adj" },
+    ],
+    sentences: [
+      { jp: "すみません、メニューをください。", kana: "すみません、メニューを ください。", cn: "请给我菜单。" },
+      { jp: "コーヒーを一つお願いします。", kana: "コーヒーを ひとつ おねがいします。", cn: "请给我一杯咖啡。" },
+      { jp: "この料理はとても美味しいです。", kana: "このりょうりは とても おいしいです。", cn: "这道菜非常好吃。" },
+      { jp: "お会計をお願いします。", kana: "おかいけいを おねがいします。", cn: "请结账。" },
+      { jp: "毎朝パンと牛乳を食べます。", kana: "まいあさ パンと ぎゅうにゅうを たべます。", cn: "每天早上吃面包喝牛奶。" },
+    ]
+  },
+  {
+    id: "shopping", icon: "🛍️", name: "购物", color: "#e74c3c",
+    words: [
+      { k: "デパート", r: "デパート", m: "百货商店", t: "noun" },
+      { k: "お店", r: "おみせ", m: "商店", t: "noun" },
+      { k: "お土産", r: "おみやげ", m: "伴手礼", t: "noun" },
+      { k: "買い物", r: "かいもの", m: "购物", t: "noun" },
+      { k: "お金", r: "おかね", m: "钱", t: "noun" },
+      { k: "財布", r: "さいふ", m: "钱包", t: "noun" },
+      { k: "色", r: "いろ", m: "颜色", t: "noun" },
+      { k: "買います", r: "かいます", m: "买", t: "verb" },
+      { k: "売ります", r: "うります", m: "卖", t: "verb" },
+      { k: "大きい", r: "おおきい", m: "大的", t: "adj" },
+      { k: "小さい", r: "ちいさい", m: "小的", t: "adj" },
+      { k: "長い", r: "ながい", m: "长的", t: "adj" },
+      { k: "短い", r: "みじかい", m: "短的", t: "adj" },
+      { k: "新しい", r: "あたらしい", m: "新的", t: "adj" },
+      { k: "古い", r: "ふるい", m: "旧的", t: "adj" },
+      { k: "白い", r: "しろい", m: "白的", t: "adj" },
+      { k: "黒い", r: "くろい", m: "黑的", t: "adj" },
+      { k: "赤い", r: "あかい", m: "红的", t: "adj" },
+      { k: "青い", r: "あおい", m: "蓝的", t: "adj" },
+      { k: "重い", r: "おもい", m: "重的", t: "adj" },
+      { k: "軽い", r: "かるい", m: "轻的", t: "adj" },
+      { k: "いくら", r: "いくら", m: "多少钱", t: "phrase" },
+    ],
+    sentences: [
+      { jp: "すみません、これはいくらですか。", kana: "すみません、これは いくらですか。", cn: "请问，这个多少钱？" },
+      { jp: "もう少し安いのはありますか。", kana: "もうすこし やすいのは ありますか。", cn: "有便宜一点的吗？" },
+      { jp: "この青いのをください。", kana: "このあおいのを ください。", cn: "请给我这个蓝色的。" },
+      { jp: "大きいサイズはありますか。", kana: "おおきいサイズは ありますか。", cn: "有大号的吗？" },
+      { jp: "友達にお土産を買いました。", kana: "ともだちに おみやげを かいました。", cn: "给朋友买了伴手礼。" },
+    ]
+  },
+  {
+    id: "direction", icon: "🧭", name: "问路与方向", color: "#27ae60",
+    words: [
+      { k: "右", r: "みぎ", m: "右", t: "noun" },
+      { k: "左", r: "ひだり", m: "左", t: "noun" },
+      { k: "前", r: "まえ", m: "前", t: "noun" },
+      { k: "後ろ", r: "うしろ", m: "后", t: "noun" },
+      { k: "上", r: "うえ", m: "上", t: "noun" },
+      { k: "下", r: "した", m: "下", t: "noun" },
+      { k: "隣", r: "となり", m: "旁边", t: "noun" },
+      { k: "近く", r: "ちかく", m: "附近", t: "noun" },
+      { k: "中", r: "なか", m: "里面", t: "noun" },
+      { k: "外", r: "そと", m: "外面", t: "noun" },
+      { k: "信号", r: "しんごう", m: "红绿灯", t: "noun" },
+      { k: "橋", r: "はし", m: "桥", t: "noun" },
+      { k: "交番", r: "こうばん", m: "派出所", t: "noun" },
+      { k: "コンビニ", r: "コンビニ", m: "便利店", t: "noun" },
+      { k: "まっすぐ", r: "まっすぐ", m: "直走", t: "adv" },
+      { k: "曲がります", r: "まがります", m: "转弯", t: "verb" },
+      { k: "渡ります", r: "わたります", m: "过（马路）", t: "verb" },
+    ],
+    sentences: [
+      { jp: "すみません、駅はどこですか。", kana: "すみません、えきは どこですか。", cn: "请问，车站在哪里？" },
+      { jp: "まっすぐ行って、右に曲がってください。", kana: "まっすぐいって、みぎに まがってください。", cn: "请直走，然后右转。" },
+      { jp: "この近くにコンビニはありますか。", kana: "このちかくに コンビニは ありますか。", cn: "这附近有便利店吗？" },
+      { jp: "郵便局は銀行の隣です。", kana: "ゆうびんきょくは ぎんこうの となりです。", cn: "邮局在银行旁边。" },
+    ]
+  },
+  {
+    id: "social", icon: "🤝", name: "自我介绍与社交", color: "#f39c12",
+    words: [
+      { k: "名前", r: "なまえ", m: "名字", t: "noun" },
+      { k: "国", r: "くに", m: "国家", t: "noun" },
+      { k: "言葉", r: "ことば", m: "语言", t: "noun" },
+      { k: "仕事", r: "しごと", m: "工作", t: "noun" },
+      { k: "学生", r: "がくせい", m: "学生", t: "noun" },
+      { k: "先生", r: "せんせい", m: "老师", t: "noun" },
+      { k: "会社員", r: "かいしゃいん", m: "公司职员", t: "noun" },
+      { k: "友達", r: "ともだち", m: "朋友", t: "noun" },
+      { k: "趣味", r: "しゅみ", m: "兴趣爱好", t: "noun" },
+      { k: "歳", r: "さい", m: "岁", t: "num" },
+      { k: "話します", r: "はなします", m: "说", t: "verb" },
+      { k: "会います", r: "あいます", m: "见面", t: "verb" },
+      { k: "分かります", r: "わかります", m: "明白/懂", t: "verb" },
+      { k: "好き", r: "すき", m: "喜欢的", t: "adj" },
+      { k: "嫌い", r: "きらい", m: "讨厌的", t: "adj" },
+      { k: "上手", r: "じょうず", m: "擅长的", t: "adj" },
+      { k: "下手", r: "へた", m: "不擅长的", t: "adj" },
+    ],
+    sentences: [
+      { jp: "はじめまして、李と申します。中国から来ました。", kana: "はじめまして、りと もうします。ちゅうごくから きました。", cn: "初次见面，我姓李，从中国来。" },
+      { jp: "日本語が少し分かります。", kana: "にほんごが すこし わかります。", cn: "我懂一点日语。" },
+      { jp: "趣味は音楽を聞くことです。", kana: "しゅみは おんがくを きくことです。", cn: "我的兴趣是听音乐。" },
+      { jp: "山田さんは料理が上手です。", kana: "やまださんは りょうりが じょうずです。", cn: "山田先生很擅长做饭。" },
+    ]
+  },
+  {
+    id: "daily", icon: "🏠", name: "日常起居", color: "#16a085",
+    words: [
+      { k: "家", r: "いえ / うち", m: "家", t: "noun" },
+      { k: "朝", r: "あさ", m: "早上", t: "noun" },
+      { k: "昼", r: "ひる", m: "中午", t: "noun" },
+      { k: "夜", r: "よる", m: "晚上", t: "noun" },
+      { k: "起きます", r: "おきます", m: "起床", t: "verb" },
+      { k: "寝ます", r: "ねます", m: "睡觉", t: "verb" },
+      { k: "洗います", r: "あらいます", m: "洗", t: "verb" },
+      { k: "休みます", r: "やすみます", m: "休息", t: "verb" },
+      { k: "出かけます", r: "でかけます", m: "出门", t: "verb" },
+      { k: "作ります", r: "つくります", m: "做/制作", t: "verb" },
+      { k: "掃除します", r: "そうじします", m: "打扫", t: "verb" },
+      { k: "洗濯します", r: "せんたくします", m: "洗衣服", t: "verb" },
+      { k: "散歩します", r: "さんぽします", m: "散步", t: "verb" },
+      { k: "シャワー", r: "シャワー", m: "淋浴", t: "noun" },
+      { k: "忙しい", r: "いそがしい", m: "忙的", t: "adj" },
+      { k: "暇", r: "ひま", m: "闲的", t: "adj" },
+      { k: "いつも", r: "いつも", m: "总是", t: "adv" },
+      { k: "時々", r: "ときどき", m: "有时", t: "adv" },
+      { k: "ゆっくり", r: "ゆっくり", m: "慢慢地", t: "adv" },
+    ],
+    sentences: [
+      { jp: "毎朝六時に起きて、シャワーを浴びます。", kana: "まいあさ ろくじに おきて、シャワーを あびます。", cn: "每天早上六点起床洗澡。" },
+      { jp: "朝ご飯を食べて、八時に出かけます。", kana: "あさごはんを たべて、はちじに でかけます。", cn: "吃完早饭，八点出门。" },
+      { jp: "夜はテレビを見て、十一時に寝ます。", kana: "よるは テレビを みて、じゅういちじに ねます。", cn: "晚上看电视，十一点睡觉。" },
+      { jp: "週末はゆっくり休みます。", kana: "しゅうまつは ゆっくり やすみます。", cn: "周末好好休息。" },
+      { jp: "日曜日に部屋を掃除して、洗濯をします。", kana: "にちようびに へやを そうじして、せんたくを します。", cn: "星期天打扫房间、洗衣服。" },
+    ]
+  },
+  {
+    id: "school", icon: "📚", name: "学校与工作", color: "#2980b9",
+    words: [
+      { k: "学校", r: "がっこう", m: "学校", t: "noun" },
+      { k: "大学", r: "だいがく", m: "大学", t: "noun" },
+      { k: "教室", r: "きょうしつ", m: "教室", t: "noun" },
+      { k: "会社", r: "かいしゃ", m: "公司", t: "noun" },
+      { k: "授業", r: "じゅぎょう", m: "课", t: "noun" },
+      { k: "宿題", r: "しゅくだい", m: "作业", t: "noun" },
+      { k: "本", r: "ほん", m: "书", t: "noun" },
+      { k: "ノート", r: "ノート", m: "笔记本", t: "noun" },
+      { k: "鉛筆", r: "えんぴつ", m: "铅笔", t: "noun" },
+      { k: "ペン", r: "ペン", m: "笔", t: "noun" },
+      { k: "辞書", r: "じしょ", m: "词典", t: "noun" },
+      { k: "勉強します", r: "べんきょうします", m: "学习", t: "verb" },
+      { k: "習います", r: "ならいます", m: "学（跟老师）", t: "verb" },
+      { k: "教えます", r: "おしえます", m: "教/告诉", t: "verb" },
+      { k: "読みます", r: "よみます", m: "读", t: "verb" },
+      { k: "書きます", r: "かきます", m: "写", t: "verb" },
+      { k: "働きます", r: "はたらきます", m: "工作", t: "verb" },
+      { k: "難しい", r: "むずかしい", m: "难的", t: "adj" },
+      { k: "易しい", r: "やさしい", m: "简单的", t: "adj" },
+      { k: "面白い", r: "おもしろい", m: "有趣的", t: "adj" },
+      { k: "大変", r: "たいへん", m: "辛苦的", t: "adj" },
+      { k: "簡単", r: "かんたん", m: "简单的", t: "adj" },
+    ],
+    sentences: [
+      { jp: "毎日大学で日本語を勉強しています。", kana: "まいにち だいがくで にほんごを べんきょうしています。", cn: "每天在大学学习日语。" },
+      { jp: "この本は少し難しいですが、面白いです。", kana: "このほんは すこし むずかしいですが、おもしろいです。", cn: "这本书有点难，但很有趣。" },
+      { jp: "宿題がたくさんあって、大変です。", kana: "しゅくだいが たくさんあって、たいへんです。", cn: "作业很多，好辛苦。" },
+      { jp: "父は銀行で働いています。", kana: "ちちは ぎんこうで はたらいています。", cn: "我爸爸在银行工作。" },
+    ]
+  },
+  {
+    id: "health", icon: "🏥", name: "身体与看病", color: "#c0392b",
+    words: [
+      { k: "病院", r: "びょういん", m: "医院", t: "noun" },
+      { k: "医者", r: "いしゃ", m: "医生", t: "noun" },
+      { k: "薬", r: "くすり", m: "药", t: "noun" },
+      { k: "病気", r: "びょうき", m: "生病", t: "noun" },
+      { k: "体", r: "からだ", m: "身体", t: "noun" },
+      { k: "頭", r: "あたま", m: "头", t: "noun" },
+      { k: "目", r: "め", m: "眼睛", t: "noun" },
+      { k: "耳", r: "みみ", m: "耳朵", t: "noun" },
+      { k: "口", r: "くち", m: "嘴", t: "noun" },
+      { k: "歯", r: "は", m: "牙齿", t: "noun" },
+      { k: "手", r: "て", m: "手", t: "noun" },
+      { k: "足", r: "あし", m: "脚/腿", t: "noun" },
+      { k: "お腹", r: "おなか", m: "肚子", t: "noun" },
+      { k: "風邪", r: "かぜ", m: "感冒", t: "noun" },
+      { k: "熱", r: "ねつ", m: "发烧", t: "noun" },
+      { k: "痛い", r: "いたい", m: "疼的", t: "adj" },
+      { k: "元気", r: "げんき", m: "健康的", t: "adj" },
+      { k: "大丈夫", r: "だいじょうぶ", m: "没问题", t: "adj" },
+    ],
+    sentences: [
+      { jp: "近くに病院はありますか。", kana: "ちかくに びょういんは ありますか。", cn: "附近有医院吗？" },
+      { jp: "頭が痛いです。薬をください。", kana: "あたまが いたいです。くすりを ください。", cn: "我头疼，请给我药。" },
+      { jp: "風邪をひきました。熱があります。", kana: "かぜを ひきました。ねつが あります。", cn: "我感冒了，有点发烧。" },
+      { jp: "薬を飲んで、ゆっくり休んでください。", kana: "くすりを のんで、ゆっくり やすんでください。", cn: "请吃药，好好休息。" },
+    ]
+  },
+  {
+    id: "weather", icon: "🌤️", name: "天气与季节", color: "#f1c40f",
+    words: [
+      { k: "天気", r: "てんき", m: "天气", t: "noun" },
+      { k: "晴れ", r: "はれ", m: "晴天", t: "noun" },
+      { k: "曇り", r: "くもり", m: "阴天", t: "noun" },
+      { k: "雨", r: "あめ", m: "雨", t: "noun" },
+      { k: "雪", r: "ゆき", m: "雪", t: "noun" },
+      { k: "風", r: "かぜ", m: "风", t: "noun" },
+      { k: "傘", r: "かさ", m: "伞", t: "noun" },
+      { k: "春", r: "はる", m: "春天", t: "noun" },
+      { k: "夏", r: "なつ", m: "夏天", t: "noun" },
+      { k: "秋", r: "あき", m: "秋天", t: "noun" },
+      { k: "冬", r: "ふゆ", m: "冬天", t: "noun" },
+      { k: "暑い", r: "あつい", m: "热的", t: "adj" },
+      { k: "寒い", r: "さむい", m: "冷的", t: "adj" },
+      { k: "暖かい", r: "あたたかい", m: "暖和的", t: "adj" },
+      { k: "涼しい", r: "すずしい", m: "凉爽的", t: "adj" },
+    ],
+    sentences: [
+      { jp: "明日の天気はどうですか。", kana: "あしたの てんきは どうですか。", cn: "明天天气怎么样？" },
+      { jp: "雨ですから、傘を持って行ってください。", kana: "あめですから、かさを もっていってください。", cn: "下雨了，请带伞。" },
+      { jp: "日本の春は暖かくて、桜が綺麗です。", kana: "にほんの はるは あたたかくて、さくらが きれいです。", cn: "日本的春天暖和，樱花很漂亮。" },
+      { jp: "冬は寒いですが、雪がとても好きです。", kana: "ふゆは さむいですが、ゆきが とても すきです。", cn: "冬天虽然冷，但我很喜欢雪。" },
+    ]
+  },
+  {
+    id: "leisure", icon: "🎉", name: "休闲娱乐", color: "#8e44ad",
+    words: [
+      { k: "映画", r: "えいが", m: "电影", t: "noun" },
+      { k: "音楽", r: "おんがく", m: "音乐", t: "noun" },
+      { k: "歌", r: "うた", m: "歌", t: "noun" },
+      { k: "スポーツ", r: "スポーツ", m: "运动", t: "noun" },
+      { k: "旅行", r: "りょこう", m: "旅行", t: "noun" },
+      { k: "散歩", r: "さんぽ", m: "散步", t: "noun" },
+      { k: "公園", r: "こうえん", m: "公园", t: "noun" },
+      { k: "山", r: "やま", m: "山", t: "noun" },
+      { k: "海", r: "うみ", m: "海", t: "noun" },
+      { k: "川", r: "かわ", m: "河", t: "noun" },
+      { k: "花", r: "はな", m: "花", t: "noun" },
+      { k: "泳ぎます", r: "およぎます", m: "游泳", t: "verb" },
+      { k: "歌います", r: "うたいます", m: "唱歌", t: "verb" },
+      { k: "遊びます", r: "あそびます", m: "玩", t: "verb" },
+      { k: "登ります", r: "のぼります", m: "爬/登", t: "verb" },
+      { k: "見ます", r: "みます", m: "看", t: "verb" },
+      { k: "聞きます", r: "ききます", m: "听", t: "verb" },
+      { k: "楽しい", r: "たのしい", m: "快乐的", t: "adj" },
+      { k: "面白い", r: "おもしろい", m: "有趣的", t: "adj" },
+      { k: "つまらない", r: "つまらない", m: "无聊的", t: "adj" },
+    ],
+    sentences: [
+      { jp: "富士山に登りたいです。", kana: "ふじさんに のぼりたいです。", cn: "我想爬富士山。" },
+      { jp: "海で泳いで、とても楽しかったです。", kana: "うみで およいで、とても たのしかったです。", cn: "在海里游泳，非常开心。" },
+      { jp: "週末、友達と映画を見ます。", kana: "しゅうまつ、ともだちと えいがを みます。", cn: "周末和朋友看电影。" },
+      { jp: "天気がいいから、公園で遊びましょう。", kana: "てんきがいいから、こうえんで あそびましょう。", cn: "天气好，去公园玩吧。" },
+    ]
+  },
+  {
+    id: "emergency", icon: "🆘", name: "万能救急短句", color: "#e74c3c",
+    words: [
+      { k: "すみません", r: "すみません", m: "不好意思/打扰了", t: "phrase" },
+      { k: "ありがとうございます", r: "ありがとうございます", m: "非常感谢", t: "phrase" },
+      { k: "お願いします", r: "おねがいします", m: "拜托了", t: "phrase" },
+      { k: "これをください", r: "これをください", m: "请给我这个", t: "phrase" },
+      { k: "もう一度お願いします", r: "もういちど おねがいします", m: "请再说一次", t: "phrase" },
+      { k: "ゆっくりお願いします", r: "ゆっくり おねがいします", m: "请说慢一点", t: "phrase" },
+      { k: "分かりません", r: "わかりません", m: "我不明白", t: "phrase" },
+      { k: "大丈夫です", r: "だいじょうぶです", m: "没关系/我没事", t: "phrase" },
+      { k: "助けてください", r: "たすけてください", m: "请帮帮我", t: "phrase" },
+      { k: "ちょっと待ってください", r: "ちょっと まってください", m: "请稍等一下", t: "phrase" },
+      { k: "写真を撮ってもいいですか", r: "しゃしんを とっても いいですか", m: "可以拍照吗？", t: "phrase" },
+      { k: "Wi-Fiはありますか", r: "ワイファイは ありますか", m: "有Wi-Fi吗？", t: "phrase" },
+      { k: "これは何ですか", r: "これは なんですか", m: "这是什么？", t: "phrase" },
+      { k: "どこですか", r: "どこですか", m: "在哪里？", t: "phrase" },
+    ],
+    sentences: []
+  }
+];
+
+const tagClass = { noun: "tag-noun", verb: "tag-verb", adj: "tag-adj", adv: "tag-adv", phrase: "tag-phrase", num: "tag-num" };
+const tagLabel = { noun: "名", verb: "动", adj: "形", adv: "副", phrase: "句", num: "数" };
+
+let currentScene = "all";
+let showSentences = true;
+let cardSize = "normal";
+let speechRate = 0.85;
+let autoPlayActive = false;
+let autoPlayQueue = [];
+let autoPlayIndex = 0;
+
+function getJaVoice() {
+  const voices = speechSynthesis.getVoices();
+  let jaVoice = voices.find(v => v.lang === 'ja-JP');
+  if (!jaVoice) jaVoice = voices.find(v => v.lang.startsWith('ja'));
+  return jaVoice || null;
+}
+
+function speakJapanese(text, onEnd) {
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ja-JP';
+  utterance.rate = speechRate;
+  utterance.pitch = 1;
+  const voice = getJaVoice();
+  if (voice) utterance.voice = voice;
+  if (onEnd) utterance.onend = onEnd;
+  utterance.onerror = function() { if (onEnd) onEnd(); };
+  speechSynthesis.speak(utterance);
+}
+
+function speakWord(reading, btn, card) {
+  document.querySelectorAll('.speak-btn.playing').forEach(b => b.classList.remove('playing'));
+  document.querySelectorAll('.card.speaking').forEach(c => c.classList.remove('speaking'));
+  if (btn) btn.classList.add('playing');
+  if (card) card.classList.add('speaking');
+  speakJapanese(reading, () => {
+    if (btn) btn.classList.remove('playing');
+    if (card) card.classList.remove('speaking');
+  });
+}
+
+function speakSentence(jp, btn, card) {
+  document.querySelectorAll('.sent-speak-btn.playing').forEach(b => b.classList.remove('playing'));
+  document.querySelectorAll('.sentence-card.speaking').forEach(c => c.classList.remove('speaking'));
+  if (btn) btn.classList.add('playing');
+  if (card) card.classList.add('speaking');
+  speakJapanese(jp, () => {
+    if (btn) btn.classList.remove('playing');
+    if (card) card.classList.remove('speaking');
+  });
+}
+
+function playScene(sceneId) {
+  const scene = scenes.find(s => s.id === sceneId);
+  if (!scene) return;
+  autoPlayQueue = [];
+  scene.words.forEach(w => autoPlayQueue.push({ type: 'word', text: w.r, display: w.k }));
+  if (showSentences) {
+    scene.sentences.forEach(s => autoPlayQueue.push({ type: 'sentence', text: s.jp, display: s.jp }));
+  }
+  autoPlayIndex = 0;
+  autoPlayActive = true;
+  updateProgressBar();
+  document.getElementById('autoplayBar').classList.add('visible');
+  playNext();
+}
+
+function playAllVisible() {
+  const filtered = currentScene === "all" ? scenes : scenes.filter(s => s.id === currentScene);
+  autoPlayQueue = [];
+  filtered.forEach(scene => {
+    scene.words.forEach(w => autoPlayQueue.push({ type: 'word', text: w.r, display: w.k }));
+    if (showSentences) {
+      scene.sentences.forEach(s => autoPlayQueue.push({ type: 'sentence', text: s.jp, display: s.jp }));
+    }
+  });
+  autoPlayIndex = 0;
+  autoPlayActive = true;
+  updateProgressBar();
+  document.getElementById('autoplayBar').classList.add('visible');
+  playNext();
+}
+
+function playNext() {
+  if (!autoPlayActive || autoPlayIndex >= autoPlayQueue.length) {
+    stopAutoPlay();
+    return;
+  }
+  const item = autoPlayQueue[autoPlayIndex];
+  document.getElementById('currentWord').textContent = item.display;
+  updateProgressBar();
+  speakJapanese(item.text, () => {
+    autoPlayIndex++;
+    if (autoPlayActive) {
+      setTimeout(playNext, 600);
+    }
+  });
+}
+
+function updateProgressBar() {
+  const pct = autoPlayQueue.length > 0 ? (autoPlayIndex / autoPlayQueue.length) * 100 : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function stopAutoPlay() {
+  autoPlayActive = false;
+  speechSynthesis.cancel();
+  document.getElementById('autoplayBar').classList.remove('visible');
+  document.getElementById('currentWord').textContent = '—';
+  document.getElementById('progressBar').style.width = '0%';
+}
+
+function init() {
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = () => {};
+  }
+  const btnContainer = document.getElementById("sceneButtons");
+  scenes.forEach(s => {
+    const btn = document.createElement("button");
+    btn.dataset.scene = s.id;
+    btn.textContent = s.icon + " " + s.name;
+    btn.onclick = function() { filterScene(s.id, this); };
+    btnContainer.appendChild(btn);
+  });
+  render();
+}
+
+function filterScene(id, btn) {
+  currentScene = id;
+  stopAutoPlay();
+  document.querySelectorAll("#sceneButtons button").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  render();
+}
+
+function toggleSentences() {
+  showSentences = !showSentences;
+  render();
+}
+
+function setSize(s) {
+  cardSize = s;
+  document.querySelectorAll(".card-size-toggle button").forEach(b => b.classList.remove("active"));
+  event.target.classList.add("active");
+  render();
+}
+
+function setSpeed(rate, btn) {
+  speechRate = rate;
+  document.querySelectorAll(".speed-toggle button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function render() {
+  const container = document.getElementById("content");
+  container.innerHTML = "";
+  const filtered = currentScene === "all" ? scenes : scenes.filter(s => s.id === currentScene);
+
+  filtered.forEach(scene => {
+    const section = document.createElement("div");
+    section.className = "scene-section";
+
+    const title = document.createElement("h2");
+    title.className = "scene-title";
+    title.innerHTML = `
+      <span>${scene.icon} ${scene.name}</span>
+      <button class="play-scene-btn" onclick="playScene('${scene.id}')">▶ 连续播放</button>
+    `;
+    section.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.className = "cards-grid" + (cardSize === "large" ? " size-large" : "");
+
+    scene.words.forEach((w, wi) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.id = `card-${scene.id}-${wi}`;
+      card.innerHTML = `
+        <button class="speak-btn" onclick="event.stopPropagation(); speakWord('${w.r.replace(/'/g,"\\'")}', this, this.parentElement)" title="播放发音">🔊</button>
+        <span class="tag ${tagClass[w.t] || ''}">${tagLabel[w.t] || ''}</span>
+        <div class="kanji">${w.k}</div>
+        <div class="reading">${w.r}</div>
+        <div class="meaning">${w.m}</div>
+      `;
+      card.onclick = function() { speakWord(w.r, card.querySelector('.speak-btn'), card); };
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
+
+    if (showSentences && scene.sentences && scene.sentences.length > 0) {
+      const sentSection = document.createElement("div");
+      sentSection.className = "sentence-section";
+
+      const sentTitle = document.createElement("h2");
+      sentTitle.className = "sentence-title";
+      sentTitle.textContent = "💬 " + scene.name + " · 例句（点击播放）";
+      sentSection.appendChild(sentTitle);
+
+      const sentCards = document.createElement("div");
+      sentCards.className = "sentence-cards";
+
+      scene.sentences.forEach((s, si) => {
+        const sc = document.createElement("div");
+        sc.className = "sentence-card";
+        sc.id = `sent-${scene.id}-${si}`;
+        sc.innerHTML = `
+          <button class="sent-speak-btn" onclick="event.stopPropagation(); speakSentence('${s.jp.replace(/'/g,"\\'")}', this, this.parentElement)" title="播放例句">🔊</button>
+          <div class="jp">${s.jp}</div>
+          <div class="kana">${s.kana}</div>
+          <div class="cn">${s.cn}</div>
+        `;
+        sc.onclick = function() { speakSentence(s.jp, sc.querySelector('.sent-speak-btn'), sc); };
+        sentCards.appendChild(sc);
+      });
+
+      sentSection.appendChild(sentCards);
+      container.appendChild(sentSection);
+    }
+  });
+}
+
+init();
+</script>
+
+</body>
+</html>
